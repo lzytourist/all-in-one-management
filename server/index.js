@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const DB = require('./DB')
 
 process.env.NODE_ENV = 'development';
 if (process.env.NODE_ENV !== 'production') {
@@ -13,11 +14,16 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
+DB().then(() => {})
+
 // Routes
 // const orders = require('./routes/api/Order')
 // app.use('/api/orders', orders)
 
+const authRoutes = require('./routes/UserAuthentication')
 const users = require('./routes/User')
+
+app.use('/api/auth', authRoutes)
 app.use('/api/users', users)
 
 const port = process.env.PORT || 5000

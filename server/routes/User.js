@@ -1,11 +1,10 @@
 const express = require('express')
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
-const DB = require('../DB')
+
+const authenticate = require('./Auth')
 
 const router = express.Router()
-
-DB().then(() => {})
 
 /**
  * Get All Users
@@ -13,7 +12,7 @@ DB().then(() => {})
  * Also supports query for limiting and skipping documents
  * @returns Array of Documents
  */
-router.get('/', (req, res) => {
+router.get('/', authenticate, (req, res) => {
   const limit = parseInt(req.query.limit)
   const skip = parseInt(req.query.skip)
 
