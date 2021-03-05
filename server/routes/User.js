@@ -7,10 +7,16 @@ const router = express.Router()
 
 DB().then(() => {})
 
+/**
+ * Get All Users
+ *
+ * Also supports query for limiting and skipping documents
+ * @returns Array of Documents
+ */
 router.get('/', (req, res) => {
   const limit = parseInt(req.query.limit)
   const skip = parseInt(req.query.skip)
-  console.log(req.query)
+
   User.find().skip(skip).limit(limit).exec(((err, res1) => {
     if (err) {
       res.send({
@@ -27,7 +33,12 @@ router.get('/', (req, res) => {
   }))
 })
 
-router.get('/get/:id', async (req, res) => {
+/**
+ * Get Single User
+ *
+ * @return Object
+ */
+router.get('/:id', async (req, res) => {
   const user = await User.findOne({_id: req.params.id})
   if (user) {
     res.json({
@@ -98,12 +109,18 @@ router.post('/', async (req, res) => {
   }
 })
 
+/**
+ * Update an User
+ *
+ * @param request body
+ * @returns Object | On success returns User document | On error returns error message
+ */
 router.put('/:id', async (req, res) => {
   User.findOneAndUpdate({_id: req.params.id}, {...req.body}, null, ((err, doc) => {
     if (err) {
       res.send({
         success: false,
-        message: err
+        message: err._message
       })
     } else {
       res.send({
