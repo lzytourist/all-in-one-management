@@ -57,9 +57,7 @@ router.get('/:id', async (req, res) => {
  * Add User
  * @param req
  * @param res
- * @returns Object
- *
- * Returns success message on success or error message on error
+ * @returns Object | Returns success message on success or error message on error
  */
 router.post('/', async (req, res) => {
   if (req.body.password !== '') {
