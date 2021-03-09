@@ -21,7 +21,6 @@ router.get('/', authenticate, (req, res) => {
       res.send({
         success: false,
         message: 'Something went wrong',
-        err
       })
     } else {
       res.send({
@@ -37,7 +36,7 @@ router.get('/', authenticate, (req, res) => {
  *
  * @return Object
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticate, async (req, res) => {
   const user = await User.findOne({_id: req.params.id})
   if (user) {
     res.json({
@@ -58,7 +57,7 @@ router.get('/:id', async (req, res) => {
  * @param res
  * @returns Object | Returns success message on success or error message on error
  */
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   if (req.body.password !== '') {
     bcrypt.hash(req.body.password, 10, async (err, hashedPass) => {
       if (err) {
@@ -83,9 +82,16 @@ router.post('/', async (req, res) => {
 
           user.save(((err1, doc) => {
             if (err1) {
+              const keys = [...Object.keys(err.errors)]
+              const errors = []
+              keys.forEach(key => {
+                errors.push(err.errors[key]['message'])
+              })
+
               res.send({
                 status: false,
-                message: err1
+                message: err1._message,
+                errors
               })
             } else {
               res.send({
@@ -112,7 +118,7 @@ router.post('/', async (req, res) => {
  * @param request body
  * @returns Object | On success returns User document | On error returns error message
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticate, async (req, res) => {
   User.findOneAndUpdate({_id: req.params.id}, {...req.body}, null, ((err, doc) => {
     if (err) {
       res.send({

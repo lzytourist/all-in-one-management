@@ -16,15 +16,13 @@ app.use(cors())
 
 DB().then(() => {})
 
-// Routes
-// const orders = require('./routes/api/Order')
-// app.use('/api/orders', orders)
-
 const authRoutes = require('./routes/UserAuthentication')
 const users = require('./routes/User')
+const orders = require('./routes/Order')
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', users)
+app.use('/api/orders', orders)
 
 const port = process.env.PORT || 5000
 
