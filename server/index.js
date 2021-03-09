@@ -19,10 +19,12 @@ DB().then(() => {})
 const authRoutes = require('./routes/UserAuthentication')
 const users = require('./routes/User')
 const orders = require('./routes/Order')
+const products = require('./routes/Product')
 
 app.use('/api/auth', authRoutes)
 app.use('/api/users', users)
 app.use('/api/orders', orders)
+app.use('/api/products', products)
 
 const port = process.env.PORT || 5000
 
