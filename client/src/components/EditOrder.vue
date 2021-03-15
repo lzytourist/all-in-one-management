@@ -4,7 +4,7 @@
       <v-container>
         <v-card elevation="24">
           <v-card-text class="pt-12 pb-12">
-            <h1 class="text-center text-uppercase blue--text text--accent-1">Add Order</h1>
+            <h1 class="text-center text-uppercase blue--text text--accent-1 py-8">Edit Order: {{ $route.params.id }}</h1>
             <v-row>
               <v-col cols="12">
                 <v-text-field
@@ -121,7 +121,7 @@
               </v-col>
               <v-col cols="12"><small>*indicates required field</small></v-col>
               <v-col cols="6">
-                <v-btn color="grey" block @click="$router.push({name: 'Orders'})">Cancel</v-btn>
+                <v-btn color="grey" block @click="$router.push({name: 'Orders'})">Go Back</v-btn>
               </v-col>
               <v-col cols="6">
                 <v-btn color="blue" block @click="insertOrder">Submit</v-btn>
@@ -131,9 +131,11 @@
         </v-card>
       </v-container>
     </v-col>
+
     <v-overlay :value="overlay">
       <v-progress-circular
           indeterminate
+          color="primary"
           width="10"
           size="80"
       ></v-progress-circular>
@@ -204,22 +206,11 @@ export default {
     async insertOrder() {
       this.overlay = true
 
-      const order = await Api.post('/orders', this.order)
+      const order = await Api.put(`/orders/${this.$route.params.id}`, this.order)
       if (!order.data.success) {
         this.showSnackbar(order.data.message, 'red')
       } else {
         this.showSnackbar(order.data.message, 'green')
-        this.order = {
-          customer_name: '',
-              customer_address: '',
-              customer_phone: '',
-              items: [],
-              buying_price: 0,
-              selling_price: 0,
-              delivered: false,
-              delivery_date: new Date().toISOString().substr(0, 10),
-              order_date: new Date().toISOString().substr(0, 10),
-        }
       }
 
       this.overlay = false
@@ -231,6 +222,20 @@ export default {
         color
       }
     }
+  },
+  created() {
+    const id = this.$route.params.id
+    this.overlay = true
+
+    Api.get(`/orders/${id}`).then(res => {
+      if (res.data.success) {
+        this.order = res.data.order
+      }
+      this.overlay = false
+    }).catch(err => {
+      console.log(err)
+      this.overlay = false
+    })
   }
 }
 </script>

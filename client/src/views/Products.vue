@@ -2,7 +2,7 @@
   <v-container>
     <v-card elevation="24">
       <v-card-text class="pt-12 pb-12">
-        <h1 class="text-center text-uppercase blue--text text--accent-1 pb-8">Orders List</h1>
+        <h1 class="text-center text-uppercase blue--text text--accent-1 pb-8">Products List</h1>
         <v-simple-table
             fixed-header
         >
@@ -10,16 +10,13 @@
             <thead>
             <tr>
               <th class="text-left">
-                # Order ID
+                Publication
               </th>
               <th class="text-left">
-                Customer Name
+                Product Name
               </th>
               <th class="text-left">
-                Delivery Status
-              </th>
-              <th class="text-left">
-                Delivery Date
+                Product Price
               </th>
               <th class="text-left">
                 Actions
@@ -28,20 +25,15 @@
             </thead>
             <tbody>
             <tr
-                v-for="order in orders"
-                :key="order._id"
+                v-for="product in products"
+                :key="product._id"
             >
-              <td>{{ order._id }}</td>
-              <td>{{ order.customer_name }}</td>
-              <td>
-                <v-icon color="green" v-if="order.delivered">mdi-check-underline-circle</v-icon>
-                <v-icon color="yellow" v-if="!order.delivered">mdi-alert-remove</v-icon>
-              </td>
-              <td>{{ order.delivery_date }}</td>
+              <td>{{ product.publication }}</td>
+              <td>{{ product.name }}</td>
+              <td>{{ product.price }}</td>
               <td class="table-actions">
-                <ViewOrder :order="order" />
-                <v-icon color="deep-orange" @click="$router.push({name: 'EditOrder', params: {id: order._id}})">mdi-circle-edit-outline</v-icon>
-                <v-icon color="red" @click="deleteConfirm(order._id)">mdi-trash-can</v-icon>
+                <v-icon color="deep-orange" @click="$router.push({name: 'EditProduct', params: {id: product._id}})">mdi-circle-edit-outline</v-icon>
+                <v-icon color="red" @click="deleteConfirm(product._id)">mdi-trash-can</v-icon>
               </td>
             </tr>
             </tbody>
@@ -54,7 +46,7 @@
                   v-model="page"
                   :length="total"
                   :total-visible="7"
-                  @input="getOrders"
+                  @input="getProducts"
               ></v-pagination>
             </div>
           </template>
@@ -70,7 +62,7 @@
                 <v-card-title class="headline">
                   Are you sure?
                 </v-card-title>
-                <v-card-text>Please confirm if you are trying to delete an order. Bear in mind that this action is undoable, data will be deleted for forever!</v-card-text>
+                <v-card-text>Please confirm if you are trying to delete an product. Bear in mind that this action is undoable, data will be deleted for forever!</v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
@@ -83,7 +75,7 @@
                   <v-btn
                       color="red darken-1"
                       text
-                      @click="deleteOrder"
+                      @click="deleteProduct"
                   >
                     Delete
                   </v-btn>
@@ -108,7 +100,7 @@
         bottom
         right
         fixed
-        @click="$router.push({name: 'AddOrder'})"
+        @click="$router.push({name: 'AddProduct'})"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -136,21 +128,19 @@
 </template>
 
 <script>
-import ViewOrder from "@/components/ViewOrder";
 import Api from "@/Api";
 
 export default {
-  name: "Orders",
-  components: {ViewOrder},
+  name: "Products",
   data() {
     return {
       dialog: false,
-      orders: [],
+      products: [],
       page: 1,
       total: 0,
       perpage: 12,
       overlay: false,
-      orderIdToDelete: '',
+      productIdToDelete: '',
       snackbar: {
         show: false,
         text: '',
@@ -159,12 +149,12 @@ export default {
     }
   },
   methods: {
-    getOrders() {
+    getProducts() {
       this.overlay = true
 
-      Api.get(`/orders?limit=${this.perpage}&skip=${(this.page - 1) * this.perpage}`).then(res => {
+      Api.get(`/products?limit=${this.perpage}&skip=${(this.page - 1) * this.perpage}`).then(res => {
         if (res.data.success) {
-          this.orders = res.data.orders
+          this.products = res.data.products
           this.total = Math.ceil(res.data.total / this.perpage)
         }
         this.overlay = false
@@ -174,15 +164,15 @@ export default {
       })
     },
     deleteConfirm(id) {
-      this.orderIdToDelete = id
+      this.productIdToDelete = id
       this.dialog = true
     },
-    async deleteOrder() {
+    async deleteProduct() {
       this.dialog = false
       this.overlay = true
-      const del = await Api.delete(`/orders/` + this.orderIdToDelete)
+      const del = await Api.delete(`/products/` + this.productIdToDelete)
       if (del.data.success) {
-        this.getOrders()
+        this.getProducts()
 
         this.snackbar = {
           show: true,
@@ -201,7 +191,7 @@ export default {
     }
   },
   created() {
-    this.getOrders()
+    this.getProducts()
   }
 }
 </script>

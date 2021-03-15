@@ -9,6 +9,7 @@ const router = express.Router()
 
 router.post('/', authenticate, (req, res) => {
   res.send({
+    success: true,
     user: req.user
   })
 })
@@ -26,7 +27,7 @@ router.post('/login', async (req, res) => {
   const user = await User.findOne({email: email})
   if (user) {
     if (await bcrypt.compare(password, user.password)) {
-      const token = jwt.sign({name: user.name, email: email}, process.env.APP_SECRET_KEY, {expiresIn: '1h'})
+      const token = jwt.sign({name: user.name, email: email}, process.env.APP_SECRET_KEY, {expiresIn: '10h'})
 
       res.send({
         success: true,

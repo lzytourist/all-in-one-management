@@ -14,16 +14,19 @@ router.get('/', authenticate, async (req, res) => {
   const limit = parseInt(req.query.limit)
   const skip = parseInt(req.query.skip)
 
-  Order.find().skip(skip).limit(limit).exec((err, docs) => {
+  Order.find().skip(skip).limit(limit).exec(async (err, docs) => {
     if (err) {
       res.send({
         success: false,
         message: 'Something went wrong'
       })
     } else {
+      let total = 0;
+      total = await Order.count();
       res.send({
         success: true,
-        orders: docs
+        orders: docs,
+        total
       })
     }
   })
