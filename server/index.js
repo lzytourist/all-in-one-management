@@ -3,7 +3,6 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const DB = require('./DB')
 
-process.env.NODE_ENV = 'development';
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config()
 }
@@ -39,6 +38,4 @@ if (process.env.NODE_ENV === 'production') {
 
 const port = process.env.PORT || 5000
 
-app.listen(port, () => {
-    console.log(`Server started on ${port}`)
-})
+app.listen(port)

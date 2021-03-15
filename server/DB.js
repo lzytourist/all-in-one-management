@@ -7,8 +7,6 @@ const DB = async () => {
       useUnifiedTopology: true,
       useFindAndModify: false
     })
-
-    console.log('DB Connection Stablished')
   } catch (err) {
     console.log(err)
   }
